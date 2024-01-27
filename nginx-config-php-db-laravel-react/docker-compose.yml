@@ -1,0 +1,48 @@
+version: "3"
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./code:/code
+      - ./laravel.conf:/etc/nginx/conf.d/default.conf
+      # - ./react.conf:/etc/nginx/conf.d/default.conf
+  back-end:
+    image: laravel-app:v1
+    volumes:
+      - web-volumes:/app
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=unit
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+  # front-end:
+  #   image: react-app:v1
+  db:
+    image: mysql:5.7
+    platform: 'linux/amd64'
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db:/var/lib/mysql
+  # dbc:
+  #   image: phpmyadmin/phpmyadmin
+  #   # links:
+  #   #   - "db"
+  #   environment:
+  #     - PMA_HOST=db
+  #   ports:
+  #     - "8081:80"
+
+volumes:
+  web-volumes:
+    name: web-volumes
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /Users/zhangyuxuan/Desktop/docker-nginx-php-front/nginx-config-php-db-laravel-react/code
